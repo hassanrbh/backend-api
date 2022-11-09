@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ProjectService } from './modules/projects/projects.service';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
-  }
+  constructor(readonly projectService: ProjectService) {}
 }
