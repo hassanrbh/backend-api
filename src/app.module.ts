@@ -6,6 +6,7 @@ import { getEnvPath } from './common/helper/env.helper';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './shared/typeorm/typeorm.service';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
@@ -14,6 +15,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     ProjectsModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],
