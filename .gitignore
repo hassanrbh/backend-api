@@ -397,4 +397,5 @@ Temporary Items
 =======
 # Local
 development.env
+.env
 dist
