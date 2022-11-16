@@ -22,7 +22,6 @@ The application is built with the following dependencies:
 * PostgreSQL for Database  
 * Config Service for environment variables
 * Swagger Implementation
-* Redis for faster queries
 
 ## Setup
 1 - Clone the repository in your workspace `git clone https://github.com/hassanrbh/backend-api`
@@ -34,6 +33,8 @@ The application is built with the following dependencies:
   * DATABASE_PASSWORD = the password of the database
   * DATABASE_PORT = 5432
   
+  OR JUST RUN Docker :)
+  
 4 - Run this maven command in your project root directory `npm run build && npm run start:prod`  
 Note:  
 Make sure your `4044` port is not already in use.  
@@ -41,7 +42,5 @@ Make sure your `4044` port is not already in use.
 ## Features   
 * Add / Update / Delete / fetch Projects.
 * Add / Update / Delete / fetch Tasks.
+* Auth Implementation with Tenants
 * Associate a project to a tasks.
-
-TODO list by priority:  
-* Adding authentication with jwt
