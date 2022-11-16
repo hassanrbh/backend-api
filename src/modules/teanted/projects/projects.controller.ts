@@ -9,13 +9,12 @@ import {
   Param,
   Patch,
   Post,
-  Query,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { Task } from '../tasks/task.entity';
 import { TaskService } from '../tasks/tasks.service';
 import { CreateProjectDto } from './create-project.dto';
-import { ProjectEntity } from './project-entities.dto';
 import { Project } from './project.entity';
 import { ProjectService } from './projects.service';
 import { UpdateProjectDto } from './update-project.dto';
@@ -25,38 +24,44 @@ import {
   ApiOperation,
   ApiBody,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Projects')
 @Controller('projects')
+@UseGuards(AuthGuard('jwt'))
 export class ProjectsController {
   @Inject(ProjectService)
   @Inject(TaskService)
   private readonly projectService: ProjectService;
-  private readonly taskService: TaskService;
 
   @Get()
-  @ApiOperation({ summary: 'Get All Projects' })
+  @ApiOperation({ summary: 'Get All Projects Of a Given Tenant' })
   @ApiResponse({ status: 200, description: 'Get All Projects' })
   @Header('Content-Type', 'application/json')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  public async GetAllProjects(
-    @Query() query: ProjectEntity,
-  ): Promise<Project[]> {
-    return await this.projectService.getAllProjects({
-      limit: Number(query.limit),
+  public async GetAllProjects(@Request() req): Promise<Project[]> {
+    const projects = await this.projectService.getAll({
+      user: req.user,
     });
+    return projects;
   }
 
   @Get(':projectId')
   @ApiResponse({ status: 200, description: 'return the specific project' })
   @ApiOperation({ summary: 'Get A Specific Project' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
   @Header('Content-Type', 'application/json')
   public async findSpecificProject(
     @Param('projectId') uuid: string,
+    @Request() req,
   ): Promise<Project> {
-    return await this.projectService.getProject(uuid);
+    return await this.projectService.get({ projectId: uuid, user: req.user });
   }
 
   @Post()
@@ -78,17 +83,24 @@ export class ProjectsController {
     },
   })
   @ApiOperation({ summary: 'Create a Project' })
+  @UseGuards(AuthGuard('jwt'))
   @Header('Content-Type', 'application/json')
   @ApiResponse({ status: 400, description: 'Invalid Request' })
   @ApiResponse({ status: 201, description: 'create a project' })
+  @ApiBearerAuth()
   @HttpCode(201)
-  public async CreateProject(@Body() dto: CreateProjectDto): Promise<Project> {
-    return await this.projectService.createProject(dto);
+  public async CreateProject(
+    @Body() dto: CreateProjectDto,
+    @Request() req,
+  ): Promise<Project> {
+    return await this.projectService.create({ entity: dto, user: req.user });
   }
 
   @Patch(':projectId')
   @HttpCode(200)
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Update A Project' })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Creating A Project' })
   @ApiResponse({ status: 400, description: 'Invalid Request Params' })
   @ApiBody({
@@ -112,22 +124,27 @@ export class ProjectsController {
     name: 'projectId',
     type: String,
   })
+  @ApiBearerAuth()
   @Header('Content-Type', 'application/json')
   async updateProject(
-    @Param() params: { uuid: string },
+    @Param('projectId') projectId: string,
     @Body() dto: UpdateProjectDto,
+    @Request() req,
   ): Promise<UpdateResult> {
-    return await this.projectService.updateProject(params.uuid, dto);
+    console.log('updating');
+    return await this.projectService.update(dto, projectId, req.user);
   }
 
   @Delete(':projectId')
   @ApiOperation({ summary: 'Delete A Project' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @ApiResponse({ status: 200, description: 'Deleting A project' })
   @HttpCode(200)
   @Header('Content-Type', 'application/json')
   public async deleteProject(
     @Param('projectId') uuid: string,
   ): Promise<DeleteResult> {
-    return await this.projectService.deleteProject(uuid);
+    return await this.projectService.delete(uuid);
   }
 }

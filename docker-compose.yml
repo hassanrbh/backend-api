@@ -1,0 +1,39 @@
+services:
+  api:
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_NAME: ProjectBackend
+      DATABASE_USER: mac
+      NODE_ENV: development
+      DATABASE_PASSWORD: mac
+    
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+
+    volumes:
+      - .:/usr/src/app
+
+    env_file:
+    - ./src/common/envs/development.env
+
+    command: npm run start:dev
+
+    ports:
+      - 3000:3000
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ProjectBackend
+      POSTGRES_USER: mac
+      POSTGRES_PASSWORD: mac
+      
+    ports:
+      - '35000:5432'
+    volumes:
+      - docker-nest-postgres:/var/lib/postgresql/data
+volumes:
+  docker-nest-postgres:

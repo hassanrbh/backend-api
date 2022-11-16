@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Identifier } from 'src/modules/handlers/tenants/dto/identifier.middlware';
 import { Task } from '../tasks/task.entity';
 import { TaskController } from '../tasks/tasks.controller';
 import { TasksModule } from '../tasks/tasks.module';
@@ -13,4 +14,8 @@ import { ProjectService } from './projects.service';
   providers: [ProjectService, TaskService],
   controllers: [ProjectsController, TaskController],
 })
-export class ProjectsModule {}
+export class ProjectsModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(Identifier).forRoutes('projects');
+  // }
+}

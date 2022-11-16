@@ -1,26 +1,19 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
-import { Task } from '../tasks/task.entity';
 
-@Entity()
-export class Project {
+export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
-  @Column({ type: 'varchar', length: 120, unique: true })
+  @Column()
   public name: string;
 
-  @Column({ type: 'varchar', length: 200, unique: true })
+  @Column()
   public description: string;
-
-  @OneToMany(() => Task, (task) => task.id)
-  tasks: Task[];
 
   @CreateDateColumn({ type: 'timestamp' })
   public createdAt!: Date;
